@@ -25,12 +25,6 @@
        changes_list: "{{ changes_list + group_var}}"
      when:  first_file['group'] != sec_file['group'] or   first_file['owner'] != sec_file['owner']
 
-
-
-
-
-
-
    - set_fact:
        mode_var: [" {{ item|basename }}'s mode  -->  {{sec_file['mode']}} to {{first_file['mode']}}"]
      when: not  first_file['mode'] == sec_file['mode']
@@ -49,21 +43,21 @@
      when: not  first_file['secontext'] == sec_file['secontext']
 
 
-   - name: show diff
+   - name: get the difference between the files
      copy:
-       src: /myplatform/backup_files/{{inventory_hostname}}/{{ item| basename }}
-       dest: /myplatform/copied_files/{{inventory_hostname}}/{{ item| basename }}
+       src: "{{sec_dir}}/{{inventory_hostname}}/{{ item| basename }}"
+       dest: "{{fisrt_dir}}/{{inventory_hostname}}/{{ item| basename }}"
      check_mode: yes
      diff: yes
-     register: yy
+     register: d
      when: not  first_file['checksum'] == sec_file['checksum']
 
    - name:
      set_fact:
-      con_changes: [ { file: "{{ item|basename }} " , changes: "{{yy.diff}}.split('\n')"} ]
+      con_changes: [ { file: "{{ item|basename }} " , changes: "{{d.diff}}.split('\n')"} ]
      when: not  first_file['checksum'] == sec_file['checksum']
 
-   - name: see diff
+   - name: add the difference to the list
      set_fact:
       content_changes: "{{ con_changes + content_changes}}"
      when: not  first_file['checksum'] == sec_file['checksum']

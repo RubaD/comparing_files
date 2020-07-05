@@ -10,3 +10,6 @@ There is two playbooks :
 ### How to use 
 - **copy.yml** takes location variable as an arguemnt and it is where to copy the files.
 - **loop.yml** takes two varibale: first_dir , sec_dir as arguments and these where are the files that will be compared.
+
+### Limitaions
+- fetch module destroys selinux contexts when copying files from remote nodes

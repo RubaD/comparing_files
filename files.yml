@@ -1,0 +1,15 @@
+---
+ 
+     data_files:
+         - {path: /root/files/f.txt }
+         - {path: /root/files/f2.txt }
+
+     avg_files:
+         - {path: /root/task1/diskavg.txt, folder: files}
+         - {path: /root/task1/memavg.txt }
+         - {path: /root/task1/cpuavg.txt }
+
+     count_files:
+         - {path: /root/task1/avgcountdisk }
+         - {path: /root/task1/avgcountmem }
+         - {path: /root/task1/cpucount }

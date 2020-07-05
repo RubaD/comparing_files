@@ -1,0 +1,20 @@
+---
+ - hosts: group1
+   tasks:
+
+
+   - set_fact:
+       changes_list: []
+   - set_fact:
+       content_changes: []
+
+   - include: compare.yml
+     with_fileglob:
+      - "{{sec_dir}}{{inventory_hostname}}/*"
+
+     delegate_to: localhost
+
+   - debug:
+      var: changes_list
+   - debug:
+      var: content_changes

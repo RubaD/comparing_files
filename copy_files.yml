@@ -1,0 +1,24 @@
+---
+  - hosts: group1
+    vars:
+
+    tasks:
+
+     - name: Include vars
+       include_vars:
+         file: files.yml
+
+     - name: creat directory with hostname
+       file:
+         path: "{{location}}/{{inventory_hostname}}"
+         state: directory
+       delegate_to: localhost
+
+     - name: copy files from remote nodes
+       fetch:
+        src: "{{item['path']}}"
+        dest: "{{location}}/{{inventory_hostname}}/"
+        flat: yes
+        mode: preserve
+       with_items: 
+        -  "{{data_files}}"

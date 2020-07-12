@@ -14,11 +14,8 @@
          state: directory
        delegate_to: localhost
 
-     - name: copy files from remote nodes
-       fetch:
-        src: "{{item['path']}}"
-        dest: "{{location}}/{{inventory_hostname}}/"
-        flat: yes
-        mode: preserve
+     - name: include copy_one_file to copy all files 
+       include: copy_one_file.yml
        with_items: 
         -  "{{data_files}}"
+      

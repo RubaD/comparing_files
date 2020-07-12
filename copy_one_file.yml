@@ -1,0 +1,33 @@
+---
+
+    - name: collect data about the file
+      copy:
+       src:  "{{item['path']}}"
+       dest: "{{item['path']}}"
+       remote_src: yes
+      diff: yes
+      check_mode: yes
+      register: first_file
+     
+    - set_fact:
+       secontext: "{{ first_file['secontext'].split(':') }}"
+    
+    - name: copy files from remote nodes
+      fetch:
+        src: "{{item['path']}}"
+        dest: "{{location}}/{{inventory_hostname}}/"
+        flat: yes
+
+
+    - name: set secontext as the original file
+      sefcontext:
+        target: "{{location}}/{{inventory_hostname}}/{{item['path'] | basename}}"
+        selevel: "{{ secontext[3] }}"
+        setype: "{{ secontext[2] }}"
+        seuser: "{{ secontext[0] }}"
+        state: present
+      delegate_to: localhost
+
+    - name: Apply new SELinux file context to filesystem
+      command: restorecon -irv "{{location}}/{{inventory_hostname}}"
+      delegate_to: localhost

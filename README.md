@@ -1,6 +1,6 @@
 # comparing files with Ansible
 There is two playbooks :
-- **copy_files.yml** which is used to copy files from remote hosts to the localho
+- **copy_all_files.yml** which is used to copy files from remote hosts to the localho
 - **compare_all_files.yml**   which used to compare different files.
 
 

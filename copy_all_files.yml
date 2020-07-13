@@ -14,8 +14,40 @@
          state: directory
        delegate_to: localhost
 
-     - name: include copy_one_file to copy all files 
-       include: copy_one_file.yml
-       with_items: 
+     - name: collect data about the file
+       copy:
+        src:  "{{item['path']}}"
+        dest: "{{item['path']}}"
+        remote_src: yes
+       diff: yes
+       check_mode: yes
+       register: files
+       with_items:
         -  "{{data_files}}"
-      
+
+     - name: copy files from remote nodes
+       fetch:
+        src: "{{item['path']}}"
+        dest: "{{location}}/{{inventory_hostname}}/"
+        flat: yes
+       with_items:
+        - "{{ data_files }}"
+
+     - name: set secontext as the original file
+       sefcontext:
+        target: "{{location}}/{{inventory_hostname}}/{{item['src'] | basename}}"
+        selevel: "{{ item['secontext'].split(':')[3] }}"
+        setype: "{{ item['secontext'].split(':')[2] }}"
+        seuser: "{{ item['secontext'].split(':')[0] }}"
+        state: present
+       delegate_to: localhost
+       with_items:
+        - "{{ files['results'] }}"
+       notify:
+        - Apply new SELinux file context to filesystem
+
+    handlers:
+
+     - name: Apply new SELinux file context to filesystem
+       command: restorecon -irv "{{location}}/{{inventory_hostname}}"
+       delegate_to: localhost      

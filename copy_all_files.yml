@@ -34,20 +34,12 @@
         - "{{ data_files }}"
 
      - name: set secontext as the original file
-       sefcontext:
-        target: "{{location}}/{{inventory_hostname}}/{{item['src'] | basename}}"
+       file:
+        path: "{{location}}/{{inventory_hostname}}/{{ item['src']|basename }}"
         selevel: "{{ item['secontext'].split(':')[3] }}"
         setype: "{{ item['secontext'].split(':')[2] }}"
         seuser: "{{ item['secontext'].split(':')[0] }}"
-        state: present
-       delegate_to: localhost
+        serole: "{{ item['secontext'].split(':')[1] }}"
        with_items:
         - "{{ files['results'] }}"
-       notify:
-        - Apply new SELinux file context to filesystem
-
-    handlers:
-
-     - name: Apply new SELinux file context to filesystem
-       command: restorecon -irv "{{location}}/{{inventory_hostname}}"
-       delegate_to: localhost      
+       delegate_to: localhost
